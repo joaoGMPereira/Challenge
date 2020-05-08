@@ -27,7 +27,7 @@ extension FavoriteCharactersViewController: UICollectionViewDelegate, UICollecti
         if let cell: CharacterCell = collectionView.dequeueReusableCell(withReuseIdentifier: CharacterCell.className, for: indexPath) as? CharacterCell {
             if let interactor = interactor, interactor.characters.count > indexPath.row {
                 let character = interactor.characters[indexPath.row]
-                cell.setup(CharacterViewModel.init(character))
+                cell.setup(CharacterViewModel.init(character, image: interactor.images.filter({$0.id == character.thumbnail?.getURLPath()}).first?.image))
             }
             
             cell.onFavorite = { [unowned self] (characterID, isAdding, image) in
@@ -44,6 +44,6 @@ extension FavoriteCharactersViewController: UICollectionViewDelegate, UICollecti
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //self.openDetailViewController(self.characterViewModels[indexPath.row].id)
+        self.router?.goToDetail(index: indexPath.row)
     }
 }

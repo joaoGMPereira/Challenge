@@ -65,7 +65,7 @@ class ItemDetailCharacterCell: UICollectionViewCell , ReloadableCellProtocol {
         self.loadingView.isAnimated(isHidden: false)
         self.characterImage.isAnimated(isHidden: true)
         self.loadingView.play()
-        self.characterImage?.downloaded(from: items.thumbnail?.getURLPath() ?? String(), contentMode: .scaleAspectFill) { image, url in
+        self.characterImage?.downloaded(from: items.thumbnail?.getURLPath() ?? String(), contentMode: .scaleAspectFit) { image, url in
             self.characterImage.image = image
             self.loadingView.stop()
             self.loadingView.isAnimated(isHidden: true)
@@ -79,7 +79,7 @@ class ItemDetailCharacterCell: UICollectionViewCell , ReloadableCellProtocol {
        
     
     override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-        return CGSize.init(width: 150, height: 200)
+        return CGSize.init(width: 200, height: 300)
     }
     
 }

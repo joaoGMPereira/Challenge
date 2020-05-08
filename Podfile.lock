@@ -22,7 +22,7 @@ PODS:
   - SwiftyRSA/ObjC (1.5.0)
 
 DEPENDENCIES:
-  - JewFeatures (from `../../../JEW-FEATURE`)
+  - JewFeatures (from `../JEW-FEATURE`)
 
 SPEC REPOS:
   trunk:
@@ -37,7 +37,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   JewFeatures:
-    :path: "../../../JEW-FEATURE"
+    :path: "../JEW-FEATURE"
 
 SPEC CHECKSUMS:
   Alamofire: 9d5c5f602928e512395b30950c5984eca840093c
@@ -50,6 +50,6 @@ SPEC CHECKSUMS:
   SwiftKeychainWrapper: 6fc49fbf7d4a6b0772917acb0e53a1639f6078d6
   SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
 
-PODFILE CHECKSUM: 5ed0d11064a038caadbc1b4211f55bcfead5a3e6
+PODFILE CHECKSUM: 4788b18d74e5b448105682f9287816f22eaa26a7
 
 COCOAPODS: 1.8.4

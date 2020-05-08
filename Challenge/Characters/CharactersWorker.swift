@@ -8,6 +8,7 @@ import JewFeatures
 import CryptoSwift
 protocol CharactersWorkerInterface {
     func fetchCharacters(offset: Int, limit: Int, searchName: String?, successCompletion: @escaping ((CharactersResult) -> ()), errorCompletion: @escaping ((ConnectorError) -> ()))
+    func fetchCharactersImages(url: String?, name: String?, completion: @escaping ((DownloadedImages) -> ()))
 }
 
 class CharactersWorker: CharactersWorkerInterface {
@@ -17,6 +18,12 @@ class CharactersWorker: CharactersWorkerInterface {
             successCompletion(charactersResult)
         }) { (connectorError) in
             errorCompletion(connectorError)
+        }
+    }
+    
+    func fetchCharactersImages(url: String?, name: String?, completion: @escaping ((DownloadedImages) -> ())) {
+        url?.downloaded { (image, id) in
+            completion(DownloadedImages(image: image, id: id, name: name))
         }
     }
 }

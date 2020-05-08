@@ -26,7 +26,6 @@ class CharacterCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        characterImage.image = nil
     }
     
     override func layoutSubviews() {
@@ -66,15 +65,10 @@ class CharacterCell: UICollectionViewCell {
     }
     
     private func setupImage(_ viewModel: CharacterViewModel) {
-        characterImage.image = nil
-        if viewModel.imagePath != nil {
-            self.characterImage.getImageFromFileManager(urlString: "\(viewModel.id)")
-            return
-        }
         self.loadingView.isAnimated(isHidden: false)
         self.characterImage.isAnimated(isHidden: true)
         self.loadingView.play()
-        self.characterImage?.downloaded(from: viewModel.photoULR, contentMode: .scaleAspectFill) { image, url in
+        if let image = viewModel.image {
             self.characterImage.image = image
             self.loadingView.stop()
             self.loadingView.isAnimated(isHidden: true)

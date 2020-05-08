@@ -1,7 +1,7 @@
 use_frameworks!
 
 target 'Challenge_Example' do
-  pod 'JewFeatures', :path => '../../../JEW-FEATURE'
+  pod 'JewFeatures', :path => '../JEW-FEATURE'
   #:git => 'https://github.com/joaoGMPereira/JEW-FEATURE.git', :branch => 'versionToTest'
   
   target 'Challenge_Tests' do
