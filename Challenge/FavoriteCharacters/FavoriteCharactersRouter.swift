@@ -9,6 +9,7 @@ import UIKit
 
 protocol FavoriteCharactersRouterInterface {
     func goToCharacters()
+    func goToDetail(index: Int)
 }
 
 class FavoriteCharactersRouter: FavoriteCharactersRouterInterface {
@@ -32,6 +33,14 @@ class FavoriteCharactersRouter: FavoriteCharactersRouterInterface {
     
     func goToCharacters() {
         AppDelegate.shared.tabBarController.selectedIndex = 0
+    }
+    
+    func goToDetail(index: Int) {
+        if let interactor = viewController?.interactor, interactor.characters.count > index {
+            let character = interactor.characters[index]
+            let detailViewController = DetailCharacterRouter.createModule(character: character)
+            viewController?.navigationController?.pushViewController(detailViewController, animated: true)
+        }
     }
     
 }

@@ -9,7 +9,7 @@ import UIKit
 import JewFeatures
 
 protocol CharactersInteractorInterface {
-    
+    var images: [DownloadedImages] { get set }
     var characters: [Character] { get set }
     var searchName: String { get set }
     func fetchCharacters(searchName: String)
@@ -25,6 +25,7 @@ protocol CharactersInteractorInterface {
 class CharactersInteractor: CharactersInteractorInterface {
     
     //MARK: Properties
+    var images = [DownloadedImages]()
     var characters = [Character]()
     var searchName = String()
     var presenter: CharactersPresenterInterface?
@@ -49,6 +50,7 @@ class CharactersInteractor: CharactersInteractorInterface {
         self.offset = 0
         hasMore = true
         characters = [Character]()
+        images = [DownloadedImages]()
         checkGetCharacters(searchName: self.searchName, hasChangedSearch: false)
     }
     
@@ -64,15 +66,17 @@ class CharactersInteractor: CharactersInteractorInterface {
     }
     
     private func getCharacters(searchName: String?, hasChangedSearch: Bool) {
+        presenter?.presentStartLoading()
         if hasChangedSearch {
             self.offset = 0
+            images = [DownloadedImages]()
         }
         self.isLoading = true
         worker.fetchCharacters(offset: offset, limit: pageSize, searchName: searchName, successCompletion: { (charactersResult) in
             self.successCompletion(charactersResult: charactersResult, hasChangedSearch: hasChangedSearch)
         }) { (connectorError) in
             self.isLoading = false
-            self.presenter?.present(connectorError: connectorError)
+            self.presenter?.present(error: CharactersConstants.getCharacterError, alertType: .error)
         }
         
     }
@@ -81,15 +85,18 @@ class CharactersInteractor: CharactersInteractorInterface {
         self.isLoading = false
         self.offset += self.pageSize
         self.hasMore = self.offset < (charactersResult.data?.total ?? 0) && (charactersResult.data?.results?.count ?? 0) == self.pageSize
-        if let newCharacters = charactersResult.data?.results {
+        guard let newCharacters = charactersResult.data?.results, newCharacters.count > 0 else {
+            self.presenter?.present(error: CharactersConstants.notCharactersFoundError, alertType: .custom(messageColor: .white, backgroundColor: .JEWPallete(red: 241, green: 174, blue: 47)))
+            return
+        }
             if hasChangedSearch {
                 self.characters = newCharacters
             } else {
                 self.characters.append(contentsOf: newCharacters)
             }
-        }
         updateFavorites()
-        self.presenter?.present(characters: characters)
+        downloadCharactersImages()
+        self.presenter?.present(characters: characters, images: images)
     }
     
     private func updateFavorites() {
@@ -117,9 +124,39 @@ class CharactersInteractor: CharactersInteractorInterface {
         }
     }
     
+    func downloadCharactersImages() {
+        let charactersCountWhenStartDownload = self.characters.count
+        var teste = 0
+        for character in self.characters {
+            if images.filter({$0.name == character.name}).count == 0 {
+                teste += 1
+                print(teste)
+                if let imagePath = character.imagePath {
+                    imagePath.getImageFromFileManager { (image) in
+                        self.images.append(DownloadedImages(image: image, id: character.thumbnail?.getURLPath(), name: character.name))
+                        self.images = self.images.filterDuplicates()
+                        if(self.images.count == charactersCountWhenStartDownload) {
+                            self.presenter?.present(characters: self.characters, images: self.images)
+                        }
+                    }
+                } else {
+                    worker.fetchCharactersImages(url: character.thumbnail?.getURLPath(), name: character.name) { (downloadedImage) in
+                        self.images.append(downloadedImage)
+                        self.images = self.images.filterDuplicates()
+                        if(self.images.count == charactersCountWhenStartDownload) {
+                            self.presenter?.present(characters: self.characters, images: self.images)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func updateFavoriteCharacters() {
         updateFavorites()
-        self.presenter?.present(characters: characters)
+        if isLoading == false {
+            self.presenter?.present(characters: characters, images: images)
+        }
     }
     
     func addFavorite(with id: Int, and image: UIImage?) {
@@ -130,8 +167,9 @@ class CharactersInteractor: CharactersInteractorInterface {
             }
             
             if let favorited = self.characters.filter({$0.id == id}).first {
-                let urlImage = image?.addImageToFileManager(id: "\(favorited.id ?? 0)")
-                let updatedFavorited = Character(with: favorited, isFavorited: true, imagePath: urlImage?.absoluteString)
+                let imagePath = "\(favorited.id ?? 0)"
+                image?.addImageToFileManager(id: imagePath)
+                let updatedFavorited = Character(with: favorited, isFavorited: true, imagePath: imagePath)
                 updatedFavorites.append(updatedFavorited)
             }
             

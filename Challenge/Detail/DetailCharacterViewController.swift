@@ -9,7 +9,10 @@ import UIKit
 import JewFeatures
 
 protocol DetailCharacterViewControllerInterface: class {
-    
+    func display(series: ReloadableSectionSeriesItem)
+    func display(comics: ReloadableSectionComicsItem)
+    func displaySeries(error: String)
+    func displayComics(error: String)
 }
 
 class DetailCharacterViewController: UIViewController {
@@ -17,21 +20,38 @@ class DetailCharacterViewController: UIViewController {
     //MARK: Properties
     var interactor: DetailCharacterInteractorInterface?
     var router: DetailCharacterRouterInterface?
+    var dataSource = ReloadableDataSource()
+    var tableViewHeightConstraint = NSLayoutConstraint()
+    var items = [ReloadableItem]()
+    
+    //MARK: UI Properties
     var scrollableStackView = ScrollableStackView(frame: .zero)
     var headerView = HeaderDetailCharacterView(frame: .zero)
     var tableView = UITableView.init(frame: .zero)
-    var dataSource = ReloadableDataSource()
-    let tableViewHeight: CGFloat = 400
+    var popupMessage: JEWPopupMessage?
+    var seriesLoadingView = LoadingView(frame: .zero)
+    var comicsLoadingView = LoadingView(frame: .zero)
+    var seriesErrorLabel = UILabel(frame: .zero)
+    var comicsErrorLabel = UILabel(frame: .zero)
+    
     
     //MARK: View lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = interactor?.character?.name
         view.backgroundColor = .groupTableViewBackground
         setupView()
-        if let interactor = interactor, let character = interactor.character {
-            DetailCharacterWorker().fetchComics(with: character.id ?? -1)
-            DetailCharacterWorker().fetchSeries(with: character.id ?? -1)
-        }
+        seriesLoadingView.start()
+        comicsLoadingView.start()
+        interactor?.fetchSeries()
+        interactor?.fetchComics()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.view.backgroundColor = .white
     }
     
 }
@@ -42,49 +62,56 @@ extension DetailCharacterViewController: JEWCodeView {
     }
     
     func setupConstraints() {
+        seriesLoadingView.backgroundColor = .white
+        seriesLoadingView.height = 15
+        comicsLoadingView.backgroundColor = .white
+        comicsLoadingView.height = 15
         scrollableStackView.setupEdgeConstraints(parent: view)
-        tableView.setupConstraints(parent: scrollableStackView, height: tableViewHeight)
-//        characterImageView.setupConstraints(parent: view, height: view.frame.height/3)
-       // characterImageView.heightAnchor.constraint(equalTo: characterImageView.widthAnchor, multiplier: 9/16).isActive = true
+        tableViewHeightConstraint = tableView.heightAnchor.constraint(equalToConstant: 100)
+        tableViewHeightConstraint.isActive = true
+        seriesErrorLabel.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        comicsErrorLabel.heightAnchor.constraint(equalToConstant: 200).isActive = true
         view.layoutIfNeeded()
     }
     
     func setupAdditionalConfiguration() {
+        popupMessage  = JEWPopupMessage(parentViewController: self)
         if let interactor = interactor, let character = interactor.character {
             headerView.setup(with: character)
-             scrollableStackView.setup(subViews: [headerView, tableView], axis: .vertical, spacing: 16, alwaysBounce: true)
+            scrollableStackView.setup(subViews: [headerView, seriesLoadingView, comicsLoadingView, tableView], axis: .vertical, spacing: 16, alwaysBounce: true)
             setupTableView()
-            var items = [ReloadableItem]()
-//            if let series = character.series {
-//                let seriesItem = ReloadableSectionSeriesItem.init(series: series, heightParent: tableViewHeight/2)
-//                    items.append(seriesItem)
-//            }
-//            
-//            if let comics = character.comics {
-//                let comicsItem = ReloadableSectionComicsItem.init(comics: comics, heightParent: tableViewHeight/2)
-//                items.append(comicsItem)
-//            }
-            dataSource.setup(newItems: items, in: tableView, hasRefreshControl: false)
         }
         
         
-       
+        
     }
     
     private func setupTableView() {
-           tableView.backgroundColor = UIColor.clear
-           tableView.separatorStyle = .none
-           tableView.dataSource = dataSource
-           tableView.delegate = dataSource
-           dataSource.delegate = self
-       }
+        tableView.isHidden = true
+        tableView.backgroundColor = UIColor.clear
+        tableView.separatorStyle = .none
+        tableView.dataSource = dataSource
+        tableView.delegate = dataSource
+        dataSource.delegate = self
+    }
     
     
 }
 
 extension DetailCharacterViewController: ReloadableDelegate {
     func apply(changes: SectionChanges) {
+        self.tableView.beginUpdates()
         
+        self.tableView.deleteSections(changes.deletes, with: .fade)
+        self.tableView.insertSections(changes.inserts, with: .fade)
+        
+        self.tableView.reloadRows(at: changes.updates.reloads, with: .fade)
+        self.tableView.insertRows(at: changes.updates.inserts, with: .fade)
+        self.tableView.deleteRows(at: changes.updates.deletes, with: .fade)
+        
+        self.tableView.endUpdates()
+        view.layoutIfNeeded()
+        self.tableViewHeightConstraint.constant = tableView.contentSize.height
     }
     
     func didSelected(indexpath: IndexPath, cell: ReloadableCellProtocol?) {
@@ -111,5 +138,33 @@ extension DetailCharacterViewController: ReloadableDelegate {
 }
 
 extension DetailCharacterViewController: DetailCharacterViewControllerInterface {
+    func display(series: ReloadableSectionSeriesItem) {
+        tableView.isHidden = false
+        seriesLoadingView.stop()
+        seriesLoadingView.isHidden = true
+        items.append(series)
+        dataSource.setup(newItems: items, in: tableView, hasRefreshControl: false)
+    }
+    
+    func display(comics: ReloadableSectionComicsItem) {
+        tableView.isHidden = false
+        comicsLoadingView.stop()
+        comicsLoadingView.isHidden = true
+        items.append(comics)
+        dataSource.setup(newItems: items, in: tableView, hasRefreshControl: false)
+    }
+    
+    func displaySeries(error: String) {
+        seriesLoadingView.stop()
+        seriesLoadingView.isHidden = true
+        popupMessage?.show(withTextMessage: error, title: AppConstants.alertTitleWithBreakLine, popupType: .error, shouldHideAutomatically: true)
+    }
+    
+    func displayComics(error: String) {
+        comicsLoadingView.stop()
+        comicsLoadingView.isHidden = true
+        popupMessage?.show(withTextMessage: error, title: AppConstants.alertTitleWithBreakLine, popupType: .error, shouldHideAutomatically: true)
+    }
+    
     
 }

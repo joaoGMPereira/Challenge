@@ -8,10 +8,14 @@
 
 import UIKit
 import JewFeatures
+import Lottie
+import PodAsset
+
 class HeaderDetailCharacterView: UIView {
     
     let imageView = UIImageView(frame: .zero)
     let label = UILabel(frame: .zero)
+    var loadingView = AnimationView()
     var character: Character?
     
     override init(frame: CGRect) {
@@ -44,21 +48,48 @@ extension HeaderDetailCharacterView: JEWCodeView {
     }
     
     func setupAdditionalConfiguration() {
+        setupLottie()
+        setupImage()
+        setupLabel()
+    }
+    
+    private func setupImage() {
         if let character = character {
+            self.imageView.tintColor = .JEWRed()
+            self.imageView.roundAllCorners(borderColor: .clear, cornerRadius: 8)
+            self.loadingView.isAnimated(isHidden: false)
+            self.imageView.isAnimated(isHidden: true)
+            self.loadingView.play()
             self.imageView.downloaded(from: character.thumbnail?.getURLPath() ?? String(), contentMode: .scaleAspectFill) { (image, url) in
                 DispatchQueue.main.async {
                     self.imageView.image = image
+                    self.loadingView.stop()
+                    self.loadingView.isAnimated(isHidden: true)
+                    self.imageView.isAnimated(isHidden: false)
                 }
             }
-            self.label.text = character.description
         }
-        self.imageView.roundAllCorners(borderColor: .clear, cornerRadius: 8)
-        self.label.numberOfLines = 0
-        self.label.textColor = .JEWBlack()
-        self.label.font = .JEW20Bold()
-        self.label.textAlignment = .center
     }
     
+    private func setupLottie() {
+        let loadAnimation = Animation.named(LottieConstants.animatedLoading, bundle:  PodAsset.bundle(forPod: JEWConstants.Resources.podsJewFeature.rawValue))
+        self.addSubview(loadingView)
+        loadingView.backgroundColor = .clear
+        loadingView.animation = loadAnimation
+        loadingView.contentMode = .scaleAspectFit
+        loadingView.animationSpeed = 1
+        loadingView.loopMode = .loop
+        loadingView.setupConstraints(parent: imageView, centerX: 0, centerY: 0, width: 50, height: 50)
+        loadingView.isAnimated(isHidden: true)
+    }
     
-    
+    func setupLabel() {
+        if let character = character {
+            self.label.text = character.description
+            self.label.numberOfLines = 0
+            self.label.textColor = .JEWBlack()
+            self.label.font = .JEW20Bold()
+            self.label.textAlignment = .center
+        }
+    }
 }

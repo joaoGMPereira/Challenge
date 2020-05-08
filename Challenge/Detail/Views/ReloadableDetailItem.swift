@@ -11,11 +11,11 @@ import JewFeatures
 
 struct ReloadableSectionComicsItem: ReloadableItem {
     var height: CGFloat? {
-        return heightParent
+        return nil
     }
     
     var comics: [Comics]
-    var heightParent: CGFloat
+    var errorTitle: String
     
     var sectionTitle: String? {
         return "Comics"
@@ -23,7 +23,7 @@ struct ReloadableSectionComicsItem: ReloadableItem {
     
     var cellItems: [CellItem] {
         var items = [CellItem]()
-        let reloadableCell = ReloadableCellDetailItem(detailItems: comics, parentHeight: heightParent)
+        let reloadableCell = ReloadableCellDetailItem(detailItems: comics, errorTitle: errorTitle)
         let item = CellItem(value: String(describing: comics), object: reloadableCell, id: sectionTitle ?? String(), bundle: JEWSession.bundle)
         items.append(item)
         return items
@@ -36,11 +36,11 @@ struct ReloadableSectionComicsItem: ReloadableItem {
 
 struct ReloadableSectionSeriesItem: ReloadableItem {
     var height: CGFloat? {
-        return heightParent
+        return nil
     }
     
     var series: [Series]
-    var heightParent: CGFloat
+    var errorTitle: String
     
     var sectionTitle: String? {
         return "Series"
@@ -48,7 +48,7 @@ struct ReloadableSectionSeriesItem: ReloadableItem {
     
     var cellItems: [CellItem] {
         var items = [CellItem]()
-        let reloadableCell = ReloadableCellDetailItem(detailItems: series, parentHeight: heightParent)
+        let reloadableCell = ReloadableCellDetailItem(detailItems: series, errorTitle: errorTitle)
         let item = CellItem(value: String(describing: series), object: reloadableCell, id: sectionTitle ?? String(), bundle: JEWSession.bundle)
         items.append(item)
         return items
@@ -60,8 +60,10 @@ struct ReloadableSectionSeriesItem: ReloadableItem {
 }
 
 struct ReloadableCellDetailItem: ReloadableItem {
+    let cellHeight: CGFloat = 300
+    let errorCellHeight: CGFloat = 200
     var height: CGFloat? {
-        return parentHeight
+        return detailItems?.count ?? 0 > 0 ? cellHeight : errorCellHeight
     }
     
     var scrollDirection: UICollectionView.ScrollDirection? {
@@ -69,7 +71,7 @@ struct ReloadableCellDetailItem: ReloadableItem {
     }
     
     var detailItems: [Items]?
-    var parentHeight: CGFloat
+    var errorTitle: String
     var sectionTitle: String? {
         return nil
     }
@@ -82,10 +84,19 @@ struct ReloadableCellDetailItem: ReloadableItem {
                 items.append(item)
             }
         }
+        
+        if detailItems?.count == 0 {
+            let item = CellItem(value: String(describing: errorTitle), object: errorTitle, id: errorTitle, bundle: Bundle.main)
+            items.append(item)
+        }
+        
         return items
     }
     
     var cellType: String {
+        if detailItems?.count == 0 {
+            return ErrorCell.className
+        }
         return ItemDetailCharacterCell.className
     }
     

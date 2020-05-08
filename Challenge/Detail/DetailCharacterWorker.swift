@@ -7,24 +7,24 @@
 import JewFeatures
 
 protocol DetailCharacterWorkerInterface {
-    func fetchComics(with characterID: Int)
-    func fetchSeries(with characterID: Int)
+    func fetchComics(with characterID: Int, successCompletion: @escaping ((ComicsResult) -> ()), errorCompletion: @escaping ((ConnectorError) -> ()))
+    func fetchSeries(with characterID: Int, successCompletion: @escaping ((SeriesResult) -> ()), errorCompletion: @escaping ((ConnectorError) -> ()))
 }
 
 class DetailCharacterWorker: DetailCharacterWorkerInterface {
-    func fetchComics(with characterID: Int) {
+    func fetchComics(with characterID: Int, successCompletion: @escaping ((ComicsResult) -> ()), errorCompletion: @escaping ((ConnectorError) -> ())) {
         JEWConnector.connector.request(withRoute: MarvelRequests.fetchComics(characterID: characterID).createRequestURL(), successCompletion: { (comics: ComicsResult) in
-           // successCompletion(charactersResult)
+            successCompletion(comics)
         }) { (connectorError) in
-            //errorCompletion(connectorError)
+            errorCompletion(connectorError)
         }
     }
     
-    func fetchSeries(with characterID: Int) {
+    func fetchSeries(with characterID: Int, successCompletion: @escaping ((SeriesResult) -> ()), errorCompletion: @escaping ((ConnectorError) -> ())) {
         JEWConnector.connector.request(withRoute: MarvelRequests.fetchSeries(characterID: characterID).createRequestURL(), successCompletion: { (series: SeriesResult) in
-            //successCompletion(charactersResult)
+            successCompletion(series)
         }) { (connectorError) in
-            //errorCompletion(connectorError)
+            errorCompletion(connectorError)
         }
     }
 }

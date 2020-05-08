@@ -13,6 +13,8 @@ protocol CharactersViewControllerInterface: class {
     func display(characters: [ReloadableCellCharacterItem])
     func display(error: String, alertType: JEWPopupMessageType)
     func displayDisconnected()
+    func displayStopLoading()
+    func displayStartLoading()
 }
 
 class CharactersViewController: UIViewController {
@@ -30,6 +32,7 @@ class CharactersViewController: UIViewController {
     var notFoundImage = UIImageView(frame: .zero)
     var errorMessageLabel = UILabel(frame: .zero)
     var retryButton = UIButton(frame: .zero)
+    let loadingView = LoadingView(frame: .zero)
     
     let imageView : UIImageView = {
         let iv = UIImageView()
@@ -64,19 +67,25 @@ extension CharactersViewController: JEWCodeView {
         view.addSubview(notFoundImage)
         view.addSubview(errorMessageLabel)
         view.addSubview(retryButton)
+        view.addSubview(loadingView)
     }
     
     func setupConstraints() {
-        collectionView.setupEdgeConstraints(parent: view)
+        loadingView.setupConstraints(parent: view, top: 0, leading: 0, trailing: 0)
+        collectionView.setupConstraints(parent: loadingView, top: 0)
+        collectionView.setupConstraints(parent: view, bottom: 0, leading: 0, trailing: 0)
         notFoundImage.setupConstraints(parent: view, top: 32, centerX: 0, width: 80, height: 80, useSafeLayout: true)
         errorMessageLabel.setupConstraints(parent: notFoundImage, topBottom: 8)
         errorMessageLabel.setupConstraints(parent: view, leading: 16, trailing: -16)
         retryButton.setupConstraints(parent: errorMessageLabel, topBottom: 16, leading: 32, trailing: -32, height: 50)
         
+        
         view.layoutIfNeeded()
     }
     
     func setupAdditionalConfiguration() {
+        loadingView.backgroundColor = .white
+        loadingView.height = 5
         setupAppearance()
         setupPopup()
         setupCollectionView()
@@ -151,7 +160,7 @@ extension CharactersViewController: JEWCodeView {
 
 
 extension CharactersViewController: UISearchBarDelegate {
-
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         timer?.invalidate()
         timer = Timer.scheduledTimer(
@@ -160,30 +169,30 @@ extension CharactersViewController: UISearchBarDelegate {
             selector: #selector(CharactersViewController.reload),
             userInfo: searchText,
             repeats: false)
-           
-       }
+        
+    }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         interactor?.fetchCharacters(searchName: String())
     }
-
+    
     @objc func reload(timer: Timer) {
         if let searchName = timer.userInfo as? String {
-           interactor?.fetchCharacters(searchName: searchName)
+            interactor?.fetchCharacters(searchName: searchName)
         }
     }
 }
 
 extension CharactersViewController: ReloadableDelegate {
     func apply(changes: SectionChanges) {
-            self.collectionView.performBatchUpdates({
-                self.collectionView.deleteSections(changes.deletes)
-                self.collectionView.insertSections(changes.inserts)
-                
-                self.collectionView.reloadItems(at: changes.updates.reloads)
-                self.collectionView.insertItems(at: changes.updates.inserts)
-                self.collectionView.deleteItems(at: changes.updates.deletes)
-            })
+        self.collectionView.performBatchUpdates({
+            self.collectionView.deleteSections(changes.deletes)
+            self.collectionView.insertSections(changes.inserts)
+            
+            self.collectionView.reloadItems(at: changes.updates.reloads)
+            self.collectionView.insertItems(at: changes.updates.inserts)
+            self.collectionView.deleteItems(at: changes.updates.deletes)
+        })
     }
     
     func didSelected(indexpath: IndexPath, cell: ReloadableCellProtocol?) {
@@ -210,6 +219,14 @@ extension CharactersViewController: ReloadableDelegate {
 }
 
 extension CharactersViewController: CharactersViewControllerInterface {
+    
+    func displayStartLoading() {
+        loadingView.start()
+    }
+    
+    func displayStopLoading() {
+        loadingView.stop()
+    }
     
     func display(characters: [ReloadableCellCharacterItem]) {
         showCharactersInfo()

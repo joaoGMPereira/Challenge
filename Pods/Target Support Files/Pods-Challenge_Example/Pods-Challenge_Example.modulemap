@@ -1,6 +1,0 @@
-framework module Pods_Challenge_Example {
-  umbrella header "Pods-Challenge_Example-umbrella.h"
-
-  export *
-  module * { export * }
-}
