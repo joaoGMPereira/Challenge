@@ -15,17 +15,15 @@ protocol DetailCharacterPresenterInterface {
 
 class DetailCharacterPresenter: DetailCharacterPresenterInterface {
     
-    var itemHeight: CGFloat = 300
-    
     //MARK: Properties
     weak var viewController: DetailCharacterViewControllerInterface?
     
     func present(series: [Series]) {
-        viewController?.display(series: ReloadableSectionSeriesItem.init(series: series, heightParent: itemHeight))
+        viewController?.display(series: ReloadableSectionSeriesItem.init(series: series, errorTitle: DetailCharacterConstants.noSeries))
     }
     
     func present(comics: [Comics]) {
-        viewController?.display(comics: ReloadableSectionComicsItem.init(comics: comics, heightParent: itemHeight))
+        viewController?.display(comics: ReloadableSectionComicsItem.init(comics: comics, errorTitle: DetailCharacterConstants.noComics))
         
     }
     func presentSeries(error: String) {

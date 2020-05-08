@@ -98,6 +98,8 @@ class CharacterCell: UICollectionViewCell {
             return defaultSize
         case .landscapeLeft, .landscapeRight:
             return landScapeSize
+        @unknown default:
+            return defaultSize
         }
     }
     

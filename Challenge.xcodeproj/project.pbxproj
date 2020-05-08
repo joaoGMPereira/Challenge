@@ -49,6 +49,8 @@
 		766A943F24651569003A5B41 /* SeriesResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766A943C24651569003A5B41 /* SeriesResult.swift */; };
 		766A944024651569003A5B41 /* Series.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766A943D24651569003A5B41 /* Series.swift */; };
 		766A944124651569003A5B41 /* SeriesData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766A943E24651569003A5B41 /* SeriesData.swift */; };
+		768A73A82465D80A00B9A091 /* ErrorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768A73A62465D80A00B9A091 /* ErrorCell.swift */; };
+		768A73A92465D80A00B9A091 /* ErrorCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 768A73A72465D80A00B9A091 /* ErrorCell.xib */; };
 		76BC7733246497030005C7C3 /* CharacterData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BC7731246497030005C7C3 /* CharacterData.swift */; };
 		76BC7734246497030005C7C3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BC7732246497030005C7C3 /* Character.swift */; };
 		76C0C9272463BB9400928BB9 /* CharactersViewController+CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C0C9262463BB9400928BB9 /* CharactersViewController+CollectionView.swift */; };
@@ -116,6 +118,8 @@
 		766A943C24651569003A5B41 /* SeriesResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeriesResult.swift; sourceTree = "<group>"; };
 		766A943D24651569003A5B41 /* Series.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Series.swift; sourceTree = "<group>"; };
 		766A943E24651569003A5B41 /* SeriesData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SeriesData.swift; sourceTree = "<group>"; };
+		768A73A62465D80A00B9A091 /* ErrorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorCell.swift; sourceTree = "<group>"; };
+		768A73A72465D80A00B9A091 /* ErrorCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ErrorCell.xib; sourceTree = "<group>"; };
 		76BC7731246497030005C7C3 /* CharacterData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CharacterData.swift; sourceTree = "<group>"; };
 		76BC7732246497030005C7C3 /* Character.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		76C0C9262463BB9400928BB9 /* CharactersViewController+CollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CharactersViewController+CollectionView.swift"; sourceTree = "<group>"; };
@@ -322,6 +326,8 @@
 				765866372464FB9B00341D5E /* ReloadableDetailItem.swift */,
 				765866392464FD5A00341D5E /* ItemDetailCharacterCell.swift */,
 				7658663A2464FD5A00341D5E /* ItemDetailCharacterCell.xib */,
+				768A73A62465D80A00B9A091 /* ErrorCell.swift */,
+				768A73A72465D80A00B9A091 /* ErrorCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -437,12 +443,12 @@
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = G77MYT7HW8;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1130;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = G77MYT7HW8;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1130;
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
 				};
@@ -473,6 +479,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				768A73A92465D80A00B9A091 /* ErrorCell.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				7633C34E2463ADB900C4F4F4 /* CharacterCell.xib in Resources */,
 				7658663C2464FD5A00341D5E /* ItemDetailCharacterCell.xib in Resources */,
@@ -576,6 +583,7 @@
 			files = (
 				76BC7734246497030005C7C3 /* Character.swift in Sources */,
 				7633C32F246381B600C4F4F4 /* CharactersInteractor.swift in Sources */,
+				768A73A82465D80A00B9A091 /* ErrorCell.swift in Sources */,
 				7633C30E24637DF100C4F4F4 /* FavoriteCharactersViewController.swift in Sources */,
 				7633C32C246381B600C4F4F4 /* CharactersWorker.swift in Sources */,
 				7658662F2464E91F00341D5E /* DetailCharacterWorker.swift in Sources */,
@@ -766,7 +774,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -783,7 +791,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -805,7 +813,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Challenge_Example.app/Challenge_Example";
 			};
 			name = Debug;
@@ -824,7 +832,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Challenge_Example.app/Challenge_Example";
 			};
 			name = Release;
